@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <model name="hole">
+      <pose>0.5 0.5 0.5  0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <scale>0.1 0.1 0.1</scale>
+              <uri>model://model/meshes/hole.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="collision">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+               <scale>0.001 0.001 0.001</scale>
+               <uri>model://model/meshes/hole.dae</uri>
+            </mesh>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+            <contact>
+            	<elastic_modulus>0.01</elastic_modulus>
+            </contact>
+          </surface>
+        </collision>
+      </link>
+    </model>
+</sdf>

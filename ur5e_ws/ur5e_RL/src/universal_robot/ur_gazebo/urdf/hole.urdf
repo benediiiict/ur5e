@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot name="sphere">
+  <static>true</static>
+  <link name="world"/>
+
+  <joint name="world_fixed" type="fixed">
+    <parent link="world"/>
+    <child link="link1"/>
+  </joint>
+
+  <link name="link1">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="10000.0" />               <!--  半径为r，高度为h，质量为m 的实心圆柱体  1/12m * ( 3r*r + h*h )-->
+      <inertia  ixx="0.7275" ixy="0.0"  ixz="0.0"  iyy="0.7275"  iyz="0.0"  izz="0.7275" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ur_gazebo/meshes/hole_ma.STL" scale="0.004 0.004 0.007"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://ur_gazebo/meshes/hole_ma.STL" scale="0.004 0.004 0.007"/>
+        <!-- <box size="0.022 0.00635 0.0375"/> -->
+      </geometry>
+      <surface>
+        <bounce>
+          <restitution_coefficient>0</restitution_coefficient>
+        </bounce>
+        <!-- <friction>
+          <ode>
+            <mu>0.01</mu>
+            <mu2>0.01</mu2>
+          </ode>
+        </friction> -->
+      </surface>
+      <selfCollide>0</selfCollide>
+    </collision>
+
+    <velocity_decay>
+      <linear>0</linear>
+      <angular>0</angular>
+    </velocity_decay>
+
+  </link>
+
+  <gazebo reference="link1">
+    <material>Gazebo/White</material>
+    <turnGravityOff>true</turnGravityOff>
+    <!-- <selfCollide>true</selfCollide> -->
+  </gazebo>
+
+</robot>

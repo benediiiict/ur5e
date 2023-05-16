@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot name="peg">
+  <link name="peg_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="10.0" />
+      <inertia  ixx="0.0" ixy="0.0"  ixz="0.0"  iyy="0.0"  iyz="0.0"  izz="0.0" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ur_gazebo/meshes/peg.STL" scale="0.003 0.003 0.003"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ur_gazebo/meshes/peg.STL" scale="0.003 0.003 0.003"/>
+        <box size="0.022 0.00635 0.0375"/>
+      </geometry>
+      <surface>
+        <bounce>
+          <restitution_coefficient>0</restitution_coefficient>
+        </bounce>
+        <friction>
+          <ode>
+            <mu>0.01</mu>
+            <mu2>0.01</mu2>
+          </ode>
+        </friction>
+      </surface>
+      <!-- <selfCollide>true</selfCollide> -->
+    </collision>
+
+  </link>
+
+  <gazebo reference="peg_link">
+    <material>Gazebo/White</material>
+    <turnGravityOff>false</turnGravityOff>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+
+</robot>

@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<robot name="peg" xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:macro name="peg" params="prefix">
+    <static>false</static>
+    <link name="${prefix}peg_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.001" />
+        <inertia  ixx="0.0001" ixy="0.0"  ixz="0.0"  iyy="0.0001"  iyz="0.0"  izz="0.0001" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ur_gazebo/meshes/peg.STL" scale="0.002 0.002 0.0016"/>
+          <cylinder length="0.06" radius="0.01"/>
+        </geometry>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://ur_gazebo/meshes/peg.STL" scale="0.002 0.002 0.0016"/>
+          <box size="0.022 0.00635 0.0375"/>
+          <cylinder length="0.06" radius="0.01"/>
+        </geometry>
+        <surface>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+          </bounce>
+          <friction>
+            <ode>
+              <mu>0.01</mu>
+              <mu2>0.01</mu2>
+            </ode>
+          </friction>
+        </surface>
+        <selfCollide>0</selfCollide>
+      </collision>
+
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+
+    <gazebo reference="${prefix}peg_link">
+      <material>Gazebo/White</material>
+      <turnGravityOff>true</turnGravityOff>
+      <!-- <selfCollide>false</selfCollide> -->
+    </gazebo>
+
+  </xacro:macro>
+</robot>

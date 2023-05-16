@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="ur5e_gripper_robot">
+  <!--
+    This is a convenience top-level xacro which loads the macro for the UR5e
+    which defines the default values for the various "parameters files"
+    parameters for a UR5e.
+    This file is only useful when loading a stand-alone, completely isolated
+    robot with only default values for all parameters such as the kinematics,
+    visual and physical parameters and joint limits.
+    This file is not intended to be integrated into a larger scene or other
+    composite xacro.
+    Instead, xacro:include 'inc/ur5e_macro.xacro' and override the defaults
+    for the arguments to that macro.
+    Refer to 'inc/ur_macro.xacro' for more information.
+  -->
+  <xacro:include filename="$(find ur_description)/urdf/inc/ur5e_macro.xacro"/>
+  <xacro:ur5e_robot prefix="" />
+  <!-- robotiq 85 gripper xacro -->
+  <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
+  <!-- <xacro:include filename="$(find robotiq_ft_sensor)/urdf/robotiq_ft300.urdf.xacro" /> -->
+  <xacro:include filename="$(find ur_gazebo)/urdf/peg_macro.xacro" />
+
+
+  <!-- robotiq FT_300 sensor-->
+  <!-- <xacro:robotiq_ft300 prefix="" parent="tool0" >
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:robotiq_ft300> -->
+  <!-- gripper -->
+  <xacro:robotiq_arg2f_85 prefix="" />
+  <!-- peg -->
+  <xacro:peg prefix="" />
+
+  <joint name="ft_gripper_joint" type="fixed">
+    <parent link= "tool0" />
+    <child link = "robotiq_arg2f_base_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 ${pi/2.0}" />
+  </joint>
+
+  <!-- The ft_sensor plugin -->
+  <gazebo reference="wrist_3_joint">
+    <provideFeedback>true</provideFeedback>
+  </gazebo>
+  <gazebo>
+    <plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
+      <updateRate>30.0</updateRate>
+      <topicName>ft_sensor_topic</topicName>
+      <jointName>wrist_3_joint</jointName>
+      <noise>
+        <type>gaussian</type>
+        <mean>0.0</mean>
+        <stddev>0.003</stddev>
+        <!-- change this to simulate noise -->
+      </noise>
+    </plugin>
+  </gazebo>
+
+  <!--  peg  -->
+  <joint name="peg_joint" type="fixed">
+    <origin xyz="-0.02 -0.065 0.0" rpy="0.0 0.0 0.0" />
+    <parent link= "robotiq_gripper_left_finger_pad" />
+    <child link= "peg_link" />
+  </joint>
+
+
+  <!-- F/T sensor joint       revolute -->
+  <!-- <joint name="joint_01" type="fixed">
+    <parent link= "tool0" />
+    <child link = "robotiq_arg2f_base_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 ${-pi/2.0}" />
+    <axis xyz="1 0 0" />
+    <limit lower="-1.57079" upper="1.57079" effort="10" velocity="10"/>
+    <safety_controller soft_lower_limit="-1.5000" soft_upper_limit="1.5000" k_position="20" k_velocity="0.0"/>
+    <dynamics damping="0" friction="0"/> -->
+    <!-- <sensor name="ur5e_force_torque" type="force_torque">
+      <update_rate>30</update_rate>
+      <always_on>true</always_on>
+      <force_torque>
+        <frame>sensor</frame>
+        <measure_direction>child_to_parent</measure_direction>
+      </force_torque>
+    </sensor> -->
+  <!-- </joint> -->
+
+  <!--             wrist_3_link     -->
+  <!-- <gazebo reference="joint_01">
+      <pose>0 0 0 0 0 0</pose>
+        <sensor name="ur5e_force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>30.0</update_rate>
+        <visualize>true</visualize> 
+          <force_torque>
+            <frame>sensor</frame>
+            <measure_direction>child_to_parent</measure_direction>
+          </force_torque>
+        </sensor>
+    </gazebo> -->
+    <!-- <gazebo reference="joint_01">
+      <provideFeedback>true</provideFeedback>
+    </gazebo>
+    <gazebo>
+      <plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
+          <updateRate>30.0</updateRate>
+          <topicName>ft300_sensor</topicName>
+          <jointName>joint_01</jointName>
+      </plugin>
+  </gazebo> -->
+
+
+
+
+  <!--  peg  -->
+  <!-- <joint name="peg_joint" type="fixed">
+    <origin xyz="-0.02 -0.065 0.0" rpy="${-pi/60.0} 0.0 0.0" />
+    <parent link= "robotiq_gripper_left_finger_pad" />
+    <child link= "peg_link" />
+  </joint> -->
+
+
+</robot>
