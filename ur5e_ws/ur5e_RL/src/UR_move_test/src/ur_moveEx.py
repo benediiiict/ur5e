@@ -66,10 +66,17 @@ def talker():
     rate.sleep()
 
 
-def Gauss():
-  x = random.normal(loc=0, scale=0.05, size=(1, 3))
-  print(x)
-  return 0
+def Gauss():       # x,y,z 跟 pose_goal 的值一樣
+  x = random.normal(loc = -0.13357, scale=0.0002, size=(1, 1))
+  # xf = x.astype(float)
+  y = random.normal(loc = 0.6015, scale=0.0002, size=(1, 1))
+  # yf = y.astype(float)
+  z = random.normal(loc = 0.2750, scale=0.0001, size=(1, 1))
+  # zf = z.astype(float)
+  # pose_Gauss = np.array([xf, yf, zf], dtype='float')
+  pose_Gauss = np.array([np.float32(x), np.float32(y), np.float32(z)]).astype(np.float32)
+  print(pose_Gauss.dtype)
+  return pose_Gauss
 
 
 class UrMoveEx(object):
@@ -157,8 +164,8 @@ class UrMoveEx(object):
     ## thing we want to do is move it to a slightly better configuration.
     # We can get the joint values from the group and adjust some of the values:
     joint_goal = move_group.get_current_joint_values()
-    # print (joint_goal)
-    joint_goal[0] = 0
+    print (joint_goal)
+    joint_goal[0] = 0.0472
     joint_goal[1] = -pi/2
     joint_goal[2] = pi/2
     joint_goal[3] = -pi/2
@@ -197,10 +204,24 @@ class UrMoveEx(object):
     ##
     ## Planning to a Joint Goal
     joint_goal = move_group.get_current_joint_values()
-    joint_goal[0] = 0.0480
-    joint_goal[1] = -1.3621
-    joint_goal[2] = 1.67432
-    joint_goal[3] = -1.881
+    # joint_goal[0] = 0.0472
+    # joint_goal[1] = -1.4621
+    # joint_goal[2] = 1.67432
+    # joint_goal[3] = -1.881
+    # joint_goal[4] = -pi/2
+    # joint_goal[5] = -pi/2
+
+    # joint_goal[0] = 0.0472
+    # joint_goal[1] = -1.278
+    # joint_goal[2] = 1.815
+    # joint_goal[3] = -2.118
+    # joint_goal[4] = -pi/2
+    # joint_goal[5] = -pi/2
+
+    joint_goal[0] = 0.0472
+    joint_goal[1] = -1.2527
+    joint_goal[2] = 1.840
+    joint_goal[3] = -2.1681
     joint_goal[4] = -pi/2
     joint_goal[5] = -pi/2
 
@@ -230,6 +251,26 @@ class UrMoveEx(object):
 
     current_joints = move_group.get_current_joint_values()
     return all_close(joint_goal, current_joints, 0.01)
+  
+  def go_to_joint_state_Real(self):
+    move_group = self.move_group
+    ## BEGIN_SUB_TUTORIAL plan_to_joint_state
+    ##
+    ## Planning to a Joint Goal
+    joint_goal = move_group.get_current_joint_values()
+    joint_goal[0] = pi/2
+    joint_goal[1] = -1.0207
+    joint_goal[2] = 1.7965
+    joint_goal[3] = -2.3448
+    joint_goal[4] = -pi/2
+    joint_goal[5] = -pi/2
+
+    move_group.go(joint_goal, wait=True)
+    move_group.stop()
+
+    current_joints = move_group.get_current_joint_values()
+    print (move_group.get_current_pose().pose)
+    return all_close(joint_goal, current_joints, 0.01)
 
   def go_to_pose_goal(self):
     # Copy class variables to local variables to make the web tutorials more clear.
@@ -244,14 +285,22 @@ class UrMoveEx(object):
     ## We can plan a motion for this group to a desired pose for the
     ## end-effector:
     pose_goal = geometry_msgs.msg.Pose()
-    # pose_goal.orientation.w = 7.20
-    pose_goal.position.x = 0.5545  #get curren = 0.5520         #0.5523
-    pose_goal.position.y = 0.1595           #0.1600
-    pose_goal.position.z = 0.2729           #0.3529
+    # Gazebo
+    pose_goal.position.x = 0.5530     #get curren = 0.5522         #0.5523
+    pose_goal.position.y = 0.1595                  #0.1600
+    pose_goal.position.z = 0.2500                  #0.3528
     pose_goal.orientation.x =0.999987923071728100
     pose_goal.orientation.y =9.314867899602954e-0500
     pose_goal.orientation.z = 0.00491375724784805400
     pose_goal.orientation.w =4.8707576392202635e-06
+
+    # pose_goal.position.x = -0.13367     #get curren = 0.         
+    # pose_goal.position.y = 0.6000                  # 0.6015 
+    # pose_goal.position.z = 0.2700                  # 0.2750   0.2555
+    # pose_goal.orientation.x = 0.7069032177991279
+    # pose_goal.orientation.y = 0.7073091952619976
+    # pose_goal.orientation.z = -0.0009079761706250836
+    # pose_goal.orientation.w = 0.0008476687664172883
 
     move_group.set_pose_target(pose_goal)
 
@@ -301,6 +350,12 @@ class UrMoveEx(object):
     wpose.orientation.z = 0.00491375724784805400
     wpose.orientation.w =4.8707576392202635e-06
 
+    # Real
+    # wpose.orientation.x = 0.7069032177991279
+    # wpose.orientation.y = 0.7073091952619976
+    # wpose.orientation.z = -0.0009079761706250836
+    # wpose.orientation.w = 0.0008476687664172883
+
     waypoints.append(copy.deepcopy(wpose))
 
     # We want the Cartesian path to be interpolated at a resolution of 1 cm
@@ -314,7 +369,7 @@ class UrMoveEx(object):
                                        0.0)         # jump_threshold
     
     move_group.execute(plan, wait=True)
-    # print (move_group.get_current_pose().pose)
+    print (move_group.get_current_pose().pose)
 
     # Note: We are just planning, not asking move_group to actually move the robot yet:
     # return plan
@@ -341,6 +396,12 @@ class UrMoveEx(object):
     self.force_feedback = np.array([force_x, force_y, force_z])
     print("force x, y, z ===", self.force_feedback)
 
+  def get_force_data(self, force_array):
+    force_x = force_array[0]
+    force_y = force_array[1]
+    force_z = force_array[2]
+    self.forceFB = np.array([force_x, force_y, force_z])
+    return self.forceFB
 
   def force_return(self,data):
     # rospy.loginfo(data)
@@ -359,21 +420,25 @@ class UrMoveEx(object):
 def main():
   try:
     # talker()
-    # Gauss()
+    a = Gauss()
+    print(a)
+    x = (0.0025 - a[0])
+    print(x)
 
     print ("============ Press `Enter` to begin the tutorial by setting up the moveit_commander ...")
     tutorial = UrMoveEx()
     
-    print ("============ Press `Enter` to execute a movement using a joint state goal ...")
+    # print ("============ Press `Enter` to execute a movement using a joint state goal ...")
     tutorial.go_to_joint_state()
     tutorial.go_to_joint_state_ready()
-    # tutorial.go_to_joint_state_take_picture()
-    # tutorial.go_to_pose_goal()
+    # # tutorial.go_to_joint_state_Real()
+    # # tutorial.go_to_joint_state_take_picture()
+    tutorial.go_to_pose_goal()
 
 
-    # for i in range (8): # 8  # 10 collision
+    # for i in range (5): # 8  # 10 collision
     #   print ("------------- Press `Enter` to plan and display a Cartesian path...")
-    #   tutorial.plan_cartesian_path(posx = 0.00308, posy = 0.00001, posz = -0.00106)
+    #   tutorial.plan_cartesian_path(posx = -0.0008, posy = -0.0000, posz = -0.012)
       # tutorial.plan_cartesian_path(posx = 0.00208, posy = 0.00001, posz = -0.00206)            # insert hole
 
     #   tutorial.get_force_data(force_array = tutorial.ft_sensor_array)

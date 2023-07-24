@@ -4,7 +4,6 @@ import numpy as np
 import gym
 import rospy
 import RL_env
-
 import numpy as np
 import gym
 import os
@@ -32,14 +31,16 @@ from stable_baselines3.common.evaluation import evaluate_policy
 rospy.init_node("predict_ppo2", anonymous=True, log_level=rospy.INFO)
 
 env_id = "ur5e-v0"
-log_dir = "/home/ben/work/ur5e_RL/src/RL_env/results/"+env_id+"/"
+# env_id = "ur5e-v2"
+# log_dir = "/home/ben/work/ur5e_RL/src/RL_env/results/"+env_id+"/"
+log_dir = "/home/ben/work/ur5e_RL/src/RL_env/results/ur5e-v0/"
 os.makedirs(log_dir, exist_ok=True)
 
 env = gym.make(env_id)
 env = Monitor(env, filename=log_dir, allow_early_resets=True)
 env = DummyVecEnv([lambda: env])
 
-model = PPO.load("/home/ben/work/ur5e_RL/src/RL_env/results/ur5e-v0/ppo_0510_150000_holem_goood.zip")
+model = PPO.load("/home/ben/work/ur5e_RL/src/RL_env/results/ur5e-v0/ppo_0705_500000_holess.zip")
 
 obs = env.reset()
 

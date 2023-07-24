@@ -54,7 +54,7 @@ def plot_results(log_folder, type_str):
     x, y = ts2xy(load_results(log_folder), type_str)
     # print(x, y)
 
-    y = moving_average(y, window=10)
+    y = moving_average(y, window=50)
     # Truncate x
     x = x[len(x) - len(y):]
     # print(x[0:1000], y)

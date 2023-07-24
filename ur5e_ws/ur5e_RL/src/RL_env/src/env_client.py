@@ -9,6 +9,7 @@ import numpy as np
 import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
+from numpy import random
 from geometry_msgs.msg import Vector3, Wrench, WrenchStamped
 from geometry_msgs.msg import Point, Pose
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
@@ -162,10 +163,44 @@ class UrMoveClient(object):
     ##
     ## Planning to a Joint Goal
     joint_goal = move_group.get_current_joint_values()
-    joint_goal[0] = 0.0480
-    joint_goal[1] = -1.3621
-    joint_goal[2] = 1.67432
-    joint_goal[3] = -1.881
+    # joint_goal[0] = 0.0472
+    # joint_goal[1] = -1.3621
+    # joint_goal[2] = 1.67432
+    # joint_goal[3] = -1.881
+    # joint_goal[4] = -pi/2
+    # joint_goal[5] = -pi/2
+
+    # joint_goal[0] = 0.0472
+    # joint_goal[1] = -1.278
+    # joint_goal[2] = 1.815
+    # joint_goal[3] = -2.118
+    # joint_goal[4] = -pi/2
+    # joint_goal[5] = -pi/2
+
+    joint_goal[0] = 0.0472
+    joint_goal[1] = -1.2527
+    joint_goal[2] = 1.840
+    joint_goal[3] = -2.1681
+    joint_goal[4] = -pi/2
+    joint_goal[5] = -1.52
+
+    move_group.go(joint_goal, wait=True)
+    move_group.stop()
+
+    current_joints = move_group.get_current_joint_values()
+    return all_close(joint_goal, current_joints, 0.01)
+  
+
+  def go_to_joint_state_Real(self):
+    move_group = self.move_group
+    ## BEGIN_SUB_TUTORIAL plan_to_joint_state
+    ##
+    ## Planning to a Joint Goal
+    joint_goal = move_group.get_current_joint_values()
+    joint_goal[0] = pi/2
+    joint_goal[1] = -1.0207
+    joint_goal[2] = 1.7965
+    joint_goal[3] = -2.3448
     joint_goal[4] = -pi/2
     joint_goal[5] = -pi/2
 
@@ -174,6 +209,92 @@ class UrMoveClient(object):
 
     current_joints = move_group.get_current_joint_values()
     return all_close(joint_goal, current_joints, 0.01)
+  
+  
+  def go_to_pose_goal_gauss(self, posex, posey, posez):
+    # Copy class variables to local variables to make the web tutorials more clear.
+    # In practice, you should use the class variables directly unless you have a good
+    # reason not to.
+    move_group = self.move_group
+
+    ## BEGIN_SUB_TUTORIAL plan_to_pose
+    ##
+    ## Planning to a Pose Goal
+    ## ^^^^^^^^^^^^^^^^^^^^^^^
+    ## We can plan a motion for this group to a desired pose for the
+    ## end-effector:
+    pose_goal = geometry_msgs.msg.Pose()
+    # pose_goal.orientation.w = 7.20
+    pose_goal.position.x = posex                  #0.5534     get curren = 0.5522         #0.5523
+    pose_goal.position.y = posey                  #0.1595                  0.1600
+    pose_goal.position.z = posez                  #0.3029                  0.3528
+    pose_goal.orientation.x = 0.999987923071728100
+    pose_goal.orientation.y = 9.314867899602954e-050
+    pose_goal.orientation.z = 0.00491375724784805400
+    pose_goal.orientation.w = 4.8707576392202635e-06
+
+    ######################## Real ##########################
+    # pose_goal.position.x = posex    #get curren = 0.         
+    # pose_goal.position.y = posey                 #0.
+    # pose_goal.position.z = posez                 # 0.2750    0.2555
+    # pose_goal.orientation.x = 0.7069032177991279
+    # pose_goal.orientation.y = 0.7073091952619976
+    # pose_goal.orientation.z = -0.0009079761706250836
+    # pose_goal.orientation.w = 0.0008476687664172883
+
+    move_group.set_pose_target(pose_goal)
+
+    ## Now, we call the planner to compute the plan and execute it.
+    plan = move_group.go(wait=True)
+    # Calling `stop()` ensures that there is no residual movement
+    move_group.stop()
+    # It is always good to clear your targets after planning with poses.
+    # Note: there is no equivalent function for clear_joint_value_targets()
+    move_group.clear_pose_targets()
+
+    ## END_SUB_TUTORIAL
+
+    # For testing:
+    # Note that since this section of code will not be included in the tutorials
+    # we use the class variable rather than the copied state variable
+    current_pose = self.move_group.get_current_pose().pose
+    print (move_group.get_current_pose().pose)
+    return all_close(pose_goal, current_pose, 0.01)
+  
+  def go_to_pose_goal_Real(self):
+    # Copy class variables to local variables to make the web tutorials more clear.
+    move_group = self.move_group
+    pose_goal = geometry_msgs.msg.Pose()
+    # Gazebo
+    # pose_goal.position.x = 0.5534     #get curren = 0.5522         #0.5523
+    # pose_goal.position.y = 0.1595                  #0.1600
+    # pose_goal.position.z = 0.3029                  #0.3528
+    # pose_goal.orientation.x =0.999987923071728100
+    # pose_goal.orientation.y =9.314867899602954e-0500
+    # pose_goal.orientation.z = 0.00491375724784805400
+    # pose_goal.orientation.w =4.8707576392202635e-06
+
+    ######################## Real ##########################
+    pose_goal.position.x = -0.13367     #get curren = 0.         
+    pose_goal.position.y = 0.6000                  # 0.6015
+    pose_goal.position.z = 0.2700                  # 0.2750    0.2555
+    pose_goal.orientation.x = 0.7069032177991279
+    pose_goal.orientation.y = 0.7073091952619976
+    pose_goal.orientation.z = -0.0009079761706250836
+    pose_goal.orientation.w = 0.0008476687664172883
+
+    move_group.set_pose_target(pose_goal)
+
+    ## Now, we call the planner to compute the plan and execute it.
+    plan = move_group.go(wait=True)
+    # Calling `stop()` ensures that there is no residual movement
+    move_group.stop()
+    # It is always good to clear your targets after planning with poses.
+    # Note: there is no equivalent function for clear_joint_value_targets()
+    move_group.clear_pose_targets()
+    current_pose = self.move_group.get_current_pose().pose
+
+    return all_close(pose_goal, current_pose, 0.01)
 
 
   def plan_cartesian_path(self, posx, posy, posz, scale=1):
@@ -193,10 +314,16 @@ class UrMoveClient(object):
     wpose.position.y += posy   # Third move sideways (y)
     wpose.position.z += posz 
 
-    wpose.orientation.x =0.999987923071728100
-    wpose.orientation.y =9.314867899602954e-0500
+    wpose.orientation.x = 0.999987923071728100
+    wpose.orientation.y = 9.314867899602954e-0500
     wpose.orientation.z = 0.00491375724784805400
-    wpose.orientation.w =4.8707576392202635e-06
+    wpose.orientation.w = 4.8707576392202635e-06
+
+    ###################### Real #####################
+    # wpose.orientation.x = 0.7069032177991279
+    # wpose.orientation.y = 0.7073091952619976
+    # wpose.orientation.z = -0.0009079761706250836
+    # wpose.orientation.w = 0.0008476687664172883
 
     waypoints.append(copy.deepcopy(wpose))
 

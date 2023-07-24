@@ -4,12 +4,16 @@ import numpy as np
 import gym
 import rospy
 import RL_env
+
 import numpy as np
 import gym
 import os
 import rospy
-# import RL_env
+import RL_env
+# import actionlib
+# import torch
 # from stable_baselines3.common.policies import MlpPolicy
+# from stable_baselines3.common import make_vec_env
 
 import moveit_commander
 import moveit_msgs.msg
@@ -45,11 +49,19 @@ env = DummyVecEnv([lambda: env])
 
 ############ Train ############
 env.reset()
-# model = PPO("MlpPolicy", env, n_steps=1024, verbose=1)
-# model.learn(total_timesteps=20000)
-model = PPO("MlpPolicy", env, n_steps=2048, verbose=1)
-model.learn(total_timesteps=500000)
-model.save(log_dir+"ppo_06_")
+model = PPO("MlpPolicy", env, n_steps=1024, verbose=1)
+model.learn(total_timesteps=20000)
+# model = PPO("MlpPolicy", env, n_steps=2048, verbose=1)
+# model.learn(total_timesteps=150000)
+model.save(log_dir+"ppo_05_")
+
+########### Predict ############
+# model = PPO.load("ppo2_UR5e_done")
+
+# obs = env.reset()
+# for i in range(25000):
+#     action, _states = model.predict(obs)
+#     obs, rewards, dones, info = env.step(action)
 
 env.close()
 
